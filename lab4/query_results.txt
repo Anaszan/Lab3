@@ -1,0 +1,268 @@
+Lab 4: Query Results - ผลลัพธ์ของการสอบถาม
+================================================
+
+เอกสารนี้แสดงผลลัพธ์ที่คาดหวังจากการรัน Query ต่างๆ บน family.pl
+(ใช้เป็นแนวทางเมื่อไม่สามารถใช้ SWI-Prolog ได้)
+
+================================================================
+ตัวอย่างที่ 1: Query แบบ Yes/No (ตรวจสอบความจริง)
+================================================================
+
+?- father(somchai, somsak).
+true.
+
+?- mother(mali, somyot).
+true.
+
+?- sibling(somsak, somporn).
+true.
+
+?- cousin(prayut, somyot).
+true.
+
+?- uncle(somsak, prayut).
+false.
+
+================================================================
+ตัวอย่างที่ 2: Query แบบหาค่า (ใช้ตัวแปร)
+================================================================
+
+% ถาม: ใครเป็นพ่อของสมศักดิ์?
+?- father(X, somsak).
+X = somchai.
+
+% ถาม: สมชายเป็นพ่อของใครบ้าง?
+?- father(somchai, X).
+X = somsak ;
+X = somporn.
+
+% ถาม: ใครเป็นปู่ของสมยศ?
+?- grandfather(X, somyot).
+X = somchai ;
+X = prasit.
+
+% ถาม: หาพี่น้องทั้งหมดของสมศักดิ์
+?- sibling(X, somsak).
+X = somporn.
+
+% ถาม: หาบรรพบุรุษทั้งหมดของสมยศ
+?- ancestor(X, somyot).
+X = somsak ;
+X = mali ;
+X = somchai ;
+X = somying ;
+X = prasit ;
+X = malee.
+
+================================================================
+ตัวอย่างที่ 3: Exercise 3 - Query ขั้นสูง
+================================================================
+
+% หาแม่ของมานี
+?- mother(X, manee).
+X = mali.
+
+% หาลูกหลานของสมชาย
+?- descendant(X, somchai).
+X = somsak ;
+X = somporn ;
+X = somyot ;
+X = manee ;
+X = prayut ;
+X = wichai ;
+X = wanida.
+
+% ตรวจสอบว่าประยุทธ์และสมยศเป็นลูกพี่ลูกน้องกันหรือไม่
+?- cousin(prayut, somyot).
+true.
+
+% หาป้าของมานี
+?- aunt(X, manee).
+X = somporn.
+
+% หาคนที่มีความเกี่ยวข้องกัน (related) กับสมยศทั้งหมด
+?- findall(X, related(X, somyot), RelatedPeople).
+RelatedPeople = [somsak, somporn, manee, prayut, wichai, wanida, mali].
+
+================================================================
+ตัวอย่างที่ 4: Exercise 1 - Query กับสมาชิกเพิ่มเติม
+================================================================
+
+% ใครเป็นพ่อของ wichai?
+?- father(X, wichai).
+X = somyot.
+
+% wichai เป็นลูกหลานของใคร?
+?- ancestor(X, wichai).
+X = somyot ;
+X = nida ;
+X = somsak ;
+X = mali ;
+X = somchai ;
+X = somying ;
+X = prasit ;
+X = malee.
+
+% wichai มีพี่สาวใครบ้าง?
+?- sister(X, wichai).
+X = wanida.
+
+================================================================
+ตัวอย่างที่ 5: Exercise 2 - Query กับ Rules เพิ่มเติม
+================================================================
+
+% ใครเป็นหลานของสมชาย?
+?- grandchild(X, somchai).
+X = somyot ;
+X = manee.
+
+% ใครเป็นลูกชายของสมศักดิ์?
+?- son(X, somsak).
+X = somyot.
+
+% ใครเป็นลูกสาวของมะลิ?
+?- daughter(X, mali).
+X = manee.
+
+% ใครเป็นปู่ (paternal grandfather) ของสมยศ?
+?- paternal_grandfather(X, somyot).
+X = somchai.
+
+% ใครเป็นตา (maternal grandfather) ของสมยศ?
+?- maternal_grandfather(X, somyot).
+X = prasit.
+
+================================================================
+ตัวอย่างที่ 6: Exercise 4 - Query กับครอบครัวที่สอง
+================================================================
+
+% หาลูกหลานของ somthong
+?- descendant(Y, somthong).
+Y = somyong ;
+Y = somrit ;
+Y = somkit ;
+Y = somporn2 ;
+Y = somkid ;
+Y = somjai.
+
+% ใครเป็นปู่ของ somkit?
+?- grandfather(X, somkit).
+X = somthong.
+
+% หาพี่น้องของ somyong
+?- sibling(X, somyong).
+X = somrit.
+
+% หาลูกพี่ลูกน้องของ somkit
+?- cousin(X, somkit).
+X = somkid ;
+X = somjai.
+
+================================================================
+ตัวอย่างที่ 7: Query ซับซ้อน
+================================================================
+
+% หาคนที่เป็นทั้งพ่อและมีลูกเป็นเพศหญิง
+?- father(X, Y), female(Y).
+X = somchai, Y = somporn ;
+X = somsak, Y = manee ;
+X = somyong, Y = somporn2 ;
+X = somrit, Y = somjai.
+
+% หาหญิงสาวที่เป็นลูกของชายอพยพ
+?- mother(X, Y), female(Y), parent(Z, X), male(Z).
+X = sompet, Y = somporn2 ;
+X = pranee, Y = somporn2 ;
+X = sompai, Y = somporn2 ;
+X = somla, Y = somjai.
+
+% หาคนไทยทั้งหมดที่มีความสัมพันธ์กับ somsak
+?- related(X, somsak).
+X = somporn ;
+X = somyot ;
+X = manee ;
+X = prayut ;
+X = wichai ;
+X = wanida ;
+X = mali ;
+X = prasit ;
+X = malee ;
+X = somying.
+
+================================================================
+ตัวอย่างที่ 8: การใช้ findall, setof, bagof
+================================================================
+
+% หาลูกทั้งหมดของสมชาย
+?- findall(X, father(somchai, X), Children).
+Children = [somsak, somporn].
+
+% หาบรรพบุรุษของสมยศ (ไม่ซ้ำและจัดเรียง)
+?- setof(X, ancestor(X, somyot), Ancestors).
+Ancestors = [malee, mali, prasit, somchai, somsak, somying].
+
+% หาคนที่มีพ่อ (ลูกทั้งหมด)
+?- findall(X, father(_, X), AllChildren).
+AllChildren = [somsak, somporn, somyot, manee, prayut, 
+               wichai, wanida, somyong, somrit, sombat, 
+               somprasom, somkit, somporn2, somkid, somjai].
+
+================================================================
+ตัวอย่างที่ 9: การตรวจสอบ Predicate
+================================================================
+
+% ดูข้อมูลทั้งหมดของ parent
+?- listing(parent).
+parent(somchai, somsak).
+parent(somchai, somporn).
+parent(somying, somsak).
+parent(somying, somporn).
+parent(prasit, mali).
+parent(malee, mali).
+parent(somsak, somyot).
+parent(somsak, manee).
+parent(mali, somyot).
+parent(mali, manee).
+parent(somporn, prayut).
+parent(somyot, wichai).
+parent(somyot, wanida).
+parent(nida, wichai).
+parent(nida, wanida).
+parent(somthong, somyong).
+parent(somthong, somrit).
+parent(sompet, somyong).
+parent(sompet, somrit).
+parent(prayoon, sombat).
+parent(prayoon, somprasom).
+parent(pranee, sombat).
+parent(pranee, somprasom).
+parent(somyong, somkit).
+parent(somyong, somporn2).
+parent(somrit, somkid).
+parent(somrit, somjai).
+
+% ดู male facts
+?- listing(male).
+male(somchai).
+male(somsak).
+male(somyot).
+male(prasit).
+male(prayut).
+male(wichai).
+male(somthong).
+male(prayoon).
+male(somyong).
+male(somrit).
+male(sombat).
+male(somkit).
+male(somkid).
+
+================================================================
+หมายเหตุ:
+================================================================
+- ผลลัพธ์เหล่านี้เป็นผลลัพธ์ที่คาดหวัง
+- การรัน Query จริงใน SWI-Prolog อาจมีลำดับที่แตกต่างกัน
+- คุณสามารถใช้ ; (เซมิโคลอน) เพื่อดูคำตอบถัดไป
+- คุณสามารถใช้ . (จุด) เพื่อหยุดการค้นหา
+
+================================================================
